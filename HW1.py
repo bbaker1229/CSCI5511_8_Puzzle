@@ -98,6 +98,7 @@ child_node(child_node(child_node(child_node(initial_node, 'Up'), 'Up'), 'Right')
 
 target_state = 123804765
 
+
 def Depth_First_Search(initial_state, target_state):
     initial_node = Node(initial_state)
     frontier = []
@@ -221,3 +222,44 @@ def manhattan_distance(state, target):
     return cnt
 
 manhattan_distance(713864025, 123804765)
+
+
+def astar(initial_state, target_state, method):
+    initial_node = Node(initial_state)
+    frontier = [initial_node]
+    reached = [initial_node.state]
+    if method == "num_wrong_tiles":
+        value = num_wrong_tiles(initial_node.state, target_state)
+    if method == "manhattan_distance":
+        value = manhattan_distance(initial_node.state, target_state)
+    rank = [initial_node.path_cost + value]
+    while frontier:
+        ind = rank.index(min(rank))
+        this_node = frontier.pop(ind)
+        rank.pop(ind)
+        if this_node.state == target_state:
+            return this_node
+        actions = possible_actions(this_node.state)
+        actions.reverse()
+        for action in actions:
+            child = child_node(this_node, action)
+            if child.state not in reached:
+                if method == "num_wrong_tiles":
+                    value = num_wrong_tiles(child.state, target_state)
+                if method == "manhattan_distance":
+                    value = manhattan_distance(child.state, target_state)
+                frontier.append(child)
+                rank.append(child.path_cost + value)
+                reached.append(child.state)
+    return []
+
+solution = astar(120843765, 123804765, "num_wrong_tiles")
+Print_Solution(solution)
+
+solution = astar(120843765, 123804765, "manhattan_distance")
+Print_Solution(solution)
+
+# Interesting states:
+# 350214876
+# 378615042
+# 567031428 # This takes the longest time

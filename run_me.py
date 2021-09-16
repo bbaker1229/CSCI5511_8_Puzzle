@@ -186,6 +186,36 @@ def visualize(state):
             print(divider)
 
 
+def astar(initial_state, target_state, method):
+    initial_node = Node(initial_state)
+    frontier = [initial_node]
+    reached = [initial_node.state]
+    if method == "num_wrong_tiles":
+        value = num_wrong_tiles(initial_node.state, target_state)
+    if method == "manhattan_distance":
+        value = manhattan_distance(initial_node.state, target_state)
+    rank = [initial_node.path_cost + value]
+    while frontier:
+        ind = rank.index(min(rank))
+        this_node = frontier.pop(ind)
+        rank.pop(ind)
+        if this_node.state == target_state:
+            return this_node
+        actions = possible_actions(this_node.state)
+        actions.reverse()
+        for action in actions:
+            child = child_node(this_node, action)
+            if child.state not in reached:
+                if method == "num_wrong_tiles":
+                    value = num_wrong_tiles(child.state, target_state)
+                if method == "manhattan_distance":
+                    value = manhattan_distance(child.state, target_state)
+                frontier.append(child)
+                rank.append(child.path_cost + value)
+                reached.append(child.state)
+    return []
+
+
 if __name__ == "__main__":
     # Test input values
     if len(sys.argv) != 2:
@@ -225,5 +255,22 @@ if __name__ == "__main__":
     print(f"The time to solve was: {iterative_deepening_time:0.6f} seconds")
     print(" ")
     # Solve A* with num_wrong_tiles
+    print("Solving with A* using num_wrong_tiles:")
+    time_start = time.perf_counter()
+    solution = astar(initial_state, target_state, "num_wrong_tiles")
+    time_end = time.perf_counter()
+    astar_time = time_end - time_start
+    print("The solution is: ")
+    print_solution(solution)
+    print(f"The time to solve was: {astar_time:0.6f} seconds")
+    print(" ")
     # Solve A* with manhattan_distance
-
+    print("Solving with A* using manhattan_distance:")
+    time_start = time.perf_counter()
+    solution = astar(initial_state, target_state, "manhattan_distance")
+    time_end = time.perf_counter()
+    astar_time = time_end - time_start
+    print("The solution is: ")
+    print_solution(solution)
+    print(f"The time to solve was: {astar_time:0.6f} seconds")
+    print(" ")
