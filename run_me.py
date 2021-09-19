@@ -220,7 +220,7 @@ if __name__ == "__main__":
     # Test input values
     if len(sys.argv) != 2:
         # Check for the correct number of commandline args
-        print("Usage: python3 filename.py <puzzle config as integer>")
+        print("Usage: python run_me.py <puzzle config as integer>")
         print(" ")
         exit()
     initial_state = sys.argv[1]
@@ -234,6 +234,14 @@ if __name__ == "__main__":
         exit()
     if initial_state.isdigit():
         initial_state = int(initial_state)
+    else:
+        # Check that the initial state is an integer.  Give an example.
+        print("The puzzle configuration should be entered as a nine digit integer.")
+        print("Example:")
+        visualize(123456780)
+        print("This would be entered as: 123456780")
+        print(" ")
+        exit()
     # Set the target state
     target_state = 123804765
     # Show initial and target configuration
