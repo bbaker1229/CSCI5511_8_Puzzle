@@ -231,19 +231,20 @@ def Depth_First_Search(initial_state, target_state):
 
 
 def Print_Solution(solution_node):
-    if type(solution_node) != type(Node(1)):
-        if solution_node == []:
+    if not isinstance(solution_node, Node):
+        if not solution_node:
             print("No solution found.")
         else:
             print("Error: This is not a node.")
         return None
     node = solution_node
     actions = []
-    while node.parent != None:
+    while node.parent is not None:
         actions.append(node.action)
         node = node.parent
     actions.reverse()
-    return actions
+    print(actions)
+    return None
 
 
 solution = Depth_First_Search(120843765, 123804765)
