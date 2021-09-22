@@ -354,32 +354,32 @@ def astar(initial_state, target_state, method):
     :return: A node that is a solution to get from the initial state to the target state.
     """
     initial_node = Node(initial_state)
-    frontier = {initial_node.state: initial_node}  # This is a dictionary keyed by state for all nodes
+    reached = {initial_node.state: initial_node}  # This is a dictionary keyed by state for all reached nodes
     value = 0
     if method == "num_wrong_tiles":
         value = num_wrong_tiles(initial_node.state, target_state)
     if method == "manhattan_distance":
         value = manhattan_distance(initial_node.state, target_state)
-    rank = PriorityQueue()  # This is a queue to store the ranks for each state.
-    rank.put((initial_node.path_cost + value, initial_node.state))
+    frontier = PriorityQueue()  # This is a queue to store the ranks for each state.
+    frontier.put((initial_node.path_cost + value, initial_node.state))
     while frontier:
-        # First we find the state with the smallest rank and remove it from the frontier and rank.
-        state = rank.get()[1]
-        this_node = frontier.pop(state)
+        # First we find the state with the smallest rank and remove it from the frontier.
+        state = frontier.get()[1]
+        this_node = reached[state]
         if this_node.state == target_state:  # Return a node if we have found a solution
             return this_node
         actions = possible_actions(this_node.state)
         # Find the next possible actions from this node and if we have not reached them
-        # add them to the frontier dictionary and the rank queue.
+        # add them to the frontier queue and the reached dictionary.
         for action in actions:
             child = child_node(this_node, action)
-            if child.state not in frontier:
+            if child.state not in reached:
                 if method == "num_wrong_tiles":
                     value = num_wrong_tiles(child.state, target_state)
                 if method == "manhattan_distance":
                     value = manhattan_distance(child.state, target_state)
-                frontier[child.state] = child
-                rank.put((child.path_cost + value, child.state))
+                reached[child.state] = child
+                frontier.put((child.path_cost + value, child.state))
     return []
 
 
