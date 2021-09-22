@@ -15,6 +15,7 @@ where n would be 2 in this case.
 
 import sys
 import time
+from queue import PriorityQueue
 
 
 class Node:
@@ -353,34 +354,32 @@ def astar(initial_state, target_state, method):
     :return: A node that is a solution to get from the initial state to the target state.
     """
     initial_node = Node(initial_state)
-    frontier = [initial_node]  # This is a list of all nodes that we are considering for review
-    reached = [initial_node.state]  # This is a list of all states that we have reached so far
+    frontier = {initial_node.state: initial_node}  # This is a dictionary keyed by state for all nodes
     value = 0
     if method == "num_wrong_tiles":
         value = num_wrong_tiles(initial_node.state, target_state)
     if method == "manhattan_distance":
         value = manhattan_distance(initial_node.state, target_state)
-    rank = [initial_node.path_cost + value]  # This is a list of the rank for each node in the frontier.
+    rank = PriorityQueue()  # This is a queue to store the ranks for each state.
+    rank.put((initial_node.path_cost + value, initial_node.state))
     while frontier:
-        # First we find the node with the smallest rank and remove it from the frontier and rank.
-        ind = rank.index(min(rank))
-        this_node = frontier.pop(ind)
-        rank.pop(ind)
+        # First we find the state with the smallest rank and remove it from the frontier and rank.
+        state = rank.get()[1]
+        this_node = frontier.pop(state)
         if this_node.state == target_state:  # Return a node if we have found a solution
             return this_node
         actions = possible_actions(this_node.state)
         # Find the next possible actions from this node and if we have not reached them
-        # add them to the lists for: frontier, reached, and rank
+        # add them to the frontier dictionary and the rank queue.
         for action in actions:
             child = child_node(this_node, action)
-            if child.state not in reached:
+            if child.state not in frontier:
                 if method == "num_wrong_tiles":
                     value = num_wrong_tiles(child.state, target_state)
                 if method == "manhattan_distance":
                     value = manhattan_distance(child.state, target_state)
-                frontier.append(child)
-                rank.append(child.path_cost + value)
-                reached.append(child.state)
+                frontier[child.state] = child
+                rank.put((child.path_cost + value, child.state))
     return []
 
 
